@@ -26,12 +26,12 @@ export const authOptions: NextAuthOptions = {
       const db_user = await prisma.user.findFirst({
         where: {
           email: token?.email
-        }
-      })
+        },
+      });
       if (db_user) {
         token.id = db_user.id
       }
-      return token
+      return token;
     },
     session: ({session, token}) => {
       if (token) {
@@ -40,8 +40,8 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email
         session.user.image = token.picture
       }
-      return session
-    }
+      return session;
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
