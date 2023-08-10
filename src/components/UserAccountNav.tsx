@@ -5,7 +5,8 @@ import {signOut} from "next-auth/react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 import Link from 'next/link'
 import { Button } from './ui/button'
-import {LogOut} from "lucide-react"
+// import {LogOut} from "lucide-react"
+import {LuLogOut} from "react-icons/lu"
 
 type Props = {
     user: Pick<User, "name" | "image" | "email">
@@ -45,7 +46,7 @@ const UserAccountNav = ({user}: Props) => {
            className='text-red-600 cursor-pointer'
           >
           Sign Out
-          <LogOut />
+          <LuLogOut/>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
