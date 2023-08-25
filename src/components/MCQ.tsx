@@ -4,6 +4,7 @@ import React from 'react'
 import { LuChevronRight, LuTimer } from 'react-icons/lu'
 import { Card, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
+import MCQCounter from './MCQCounter'
 
 type Props = {
     game: Game & {questions: Pick<Question, 'id' | 'options' | 'question'>[]}
@@ -26,6 +27,7 @@ const MCQ = ({game}: Props) => {
   return (
     <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:w-[80vw] max-w-4xl w-[90vw]'>
       <div className='flex flex-row justify-between'>
+      <div className='flex flex-col'>
         {/*Topic*/}
         <p>
           <span className='text-slate-400 mr-2'>Topic</span>
@@ -35,7 +37,8 @@ const MCQ = ({game}: Props) => {
           <LuTimer className='mr-2'/>
           <span>00:00</span>
         </div>
-        {/*<MCQCounter/>*/}
+        </div>
+        <MCQCounter correctAnswers={3} wrongAnswers={3}/>
       </div>
       <Card className='w-full mt-4'>
         <CardHeader className='flex flex-row items-center'>
