@@ -5,6 +5,10 @@ import { LuChevronRight, LuTimer } from 'react-icons/lu'
 import { Card, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import MCQCounter from './MCQCounter'
+import {useMutation} from "@tanstack/react-query"
+import axios from "axios"
+import { z } from 'zod'
+import { checkAnswerSchema } from '@/schemas/form/quiz'
 
 type Props = {
     game: Game & {questions: Pick<Question, 'id' | 'options' | 'question'>[]}
@@ -17,6 +21,17 @@ const MCQ = ({game}: Props) => {
   const currentQuestion = React.useMemo(()=>{
       return game.questions[questionIndex]
     },[questionIndex, game.questions])
+
+  const {mutate: checkAnswer, isLoading: isChecking} = useMutation({
+      mutationFn: async () =>{
+          const payload: z.infer<typeof checkAnswerSchema> = {
+              questionId: currentQuestion.id,
+              userAnswer: options[selectedChoice],
+
+            }
+          const response = await axios.post('/api/checkAnswer', payload)
+        }
+    })
 
   const options = React.useMemo(()=>{
       if(!currentQuestion) return []
