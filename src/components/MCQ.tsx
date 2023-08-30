@@ -16,16 +16,27 @@ type Props = {
   }
 
 const MCQ = ({game}: Props) => {
+  //react state for question number
   const [questionIndex, setQuestionIndex] = React.useState(0);
+  
+  //react state for selecting an option
   const [selectedChoice, setSelectedChoice] = React.useState<number>(0)
+
+  //react state to count correct answers
   const [correctAnswers, setCorrectAnswers] = React.useState<number>(0)
+
+  //react state to count the wrong answers
   const [wrongAnswers, setWrongAnswers] = React.useState<number>(0)
+
+  //shadcn toast
   const {toast} = useToast()
 
   const currentQuestion = React.useMemo(()=>{
       return game.questions[questionIndex]
     },[questionIndex, game.questions])
+  
 
+  //using mutation and checking the correct answer from endpoint
   const {mutate: checkAnswer, isLoading: isChecking} = useMutation({
       mutationFn: async () =>{
           const payload: z.infer<typeof checkAnswerSchema> = {
@@ -36,22 +47,59 @@ const MCQ = ({game}: Props) => {
           return response.data
         }
     })
-
+  
+  //shadcn toast for correct or wrong answers
+  //counting correct answers
+  //increasing the index of questions
   const handleNext = React.useCallback(()=>{
+      if(isChecking) return;
       checkAnswer(undefined, {
           onSuccess: ({isCorrect})=>{
               if(isCorrect){
                   toast({
                       title: "Correct!",
-                      variant: 'success'
+                      description: "Correct Answer",
+                      variant: 'success',
                     })
                   setCorrectAnswers((prev) => prev + 1)
                 } else {
+                    toast({
+                        title: "Incorrect!",
+                        description: "Incorrect Answer",
+                        variant: "destructive",
+                      })
                     setWrongAnswers((prev) => prev + 1)
                   }
+                  setQuestionIndex((prev) => prev + 1)
             }
         })
-    },[])
+    },[checkAnswer, toast, isChecking])
+
+  
+  //Adding keyboard controls
+  React.useEffect(()=>{
+    const handleKeyDown = (event: KeyboardEvent) => {
+          if(event.key === '1'){
+              setSelectedChoice(0);
+            } else if(event.key === '2') {
+                setSelectedChoice(1);
+              }
+              else if(event.key === '3'){
+                  setSelectedChoice(2);
+                }
+                else if(event.key === '4'){
+                    setSelectedChoice(3);
+                  }
+                  else if(event.key === 'Enter'){
+                      handleNext();
+                    }
+      }
+      document.addEventListener('keydown', handleKeyDown)
+      return () =>{
+          document.removeEventListener("keydown", ()=> {});
+        }
+    },[handleNext]);
+
 
   const options = React.useMemo(()=>{
       if(!currentQuestion) return []
@@ -109,6 +157,10 @@ const MCQ = ({game}: Props) => {
           })}
           <Button
           className='mt-2'
+          disabled = {isChecking}
+          onClick={()=>{
+              handleNext();
+            }}
           >
             Next <LuChevronRight className='w-4 h-4 ml-2'/>
           </Button>
