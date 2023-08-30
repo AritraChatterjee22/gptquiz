@@ -9,6 +9,7 @@ import {useMutation} from "@tanstack/react-query"
 import axios from "axios"
 import { z } from 'zod'
 import { checkAnswerSchema } from '@/schemas/form/quiz'
+import { useToast } from './ui/use-toast'
 
 type Props = {
     game: Game & {questions: Pick<Question, 'id' | 'options' | 'question'>[]}
@@ -17,6 +18,9 @@ type Props = {
 const MCQ = ({game}: Props) => {
   const [questionIndex, setQuestionIndex] = React.useState(0);
   const [selectedChoice, setSelectedChoice] = React.useState<number>(0)
+  const [correctAnswers, setCorrectAnswers] = React.useState<number>(0)
+  const [wrongAnswers, setWrongAnswers] = React.useState<number>(0)
+  const {toast} = useToast()
 
   const currentQuestion = React.useMemo(()=>{
       return game.questions[questionIndex]
@@ -27,11 +31,27 @@ const MCQ = ({game}: Props) => {
           const payload: z.infer<typeof checkAnswerSchema> = {
               questionId: currentQuestion.id,
               userAnswer: options[selectedChoice],
-
             }
-          const response = await axios.post('/api/checkAnswer', payload)
+          const response = await axios.post('/api/checkAnswer', payload);
+          return response.data
         }
     })
+
+  const handleNext = React.useCallback(()=>{
+      checkAnswer(undefined, {
+          onSuccess: ({isCorrect})=>{
+              if(isCorrect){
+                  toast({
+                      title: "Correct!",
+                      variant: 'success'
+                    })
+                  setCorrectAnswers((prev) => prev + 1)
+                } else {
+                    setWrongAnswers((prev) => prev + 1)
+                  }
+            }
+        })
+    },[])
 
   const options = React.useMemo(()=>{
       if(!currentQuestion) return []
