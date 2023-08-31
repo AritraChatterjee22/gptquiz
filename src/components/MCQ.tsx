@@ -138,7 +138,8 @@ const MCQ = ({game}: Props) => {
       return(
         <div className='absolute flex flex-col justify-center top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
           <div className='px-4 mt-2 font-semibold text-white bg-green-500 rounded-md whitespace-nowrap'>
-            You completed in {'6 mins 9 secs'}
+            You completed in {' '}
+            {formatTimeDelta(differenceInSeconds(now, game.timeStarted))}
           </div>
           <Link href={`/statistics/${game.id}`} className={cn(buttonVariants(),'mt-2')}>
             View Statistics
