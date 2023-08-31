@@ -3,6 +3,7 @@ import { Game, Question } from '@prisma/client'
 import React from 'react'
 import { LuChevronRight, LuTimer, LuLoader2, LuBarChart } from 'react-icons/lu'
 import { Card, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { differenceInSeconds } from "date-fns"
 import { Button, buttonVariants } from './ui/button'
 import MCQCounter from './MCQCounter'
 import {useMutation} from "@tanstack/react-query"
@@ -11,7 +12,7 @@ import { z } from 'zod'
 import { checkAnswerSchema } from '@/schemas/form/quiz'
 import { useToast } from './ui/use-toast'
 import Link from "next/link";
-import { cn } from '@/lib/utils'
+import { cn, formatTimeDelta } from '@/lib/utils'
 
 type Props = {
     game: Game & {questions: Pick<Question, 'id' | 'options' | 'question'>[]}
@@ -33,8 +34,25 @@ const MCQ = ({game}: Props) => {
   //react state for end of quiz
   const [hasEnded, setHasEnded] = React.useState<boolean>(false)
 
+  //react state for current time 
+  const [now, setNow] = React.useState<Date>(new Date());
+
   //shadcn toast
   const {toast} = useToast()
+
+  //react useEffect to upadte the state now
+  React.useEffect(()=>{
+      const interval = setInterval(()=>{
+          if(!hasEnded){
+              setNow(new Date())
+            }
+        }, 1000)
+      return ()=>{
+          clearInterval(interval)
+        }
+    },[hasEnded])
+
+
 
   const currentQuestion = React.useMemo(()=>{
       return game.questions[questionIndex]
@@ -141,7 +159,7 @@ const MCQ = ({game}: Props) => {
         </p>
         <div className='flex self-start mt-3 text-slate-400'>
           <LuTimer className='mr-2'/>
-          <span>00:00</span>
+          {formatTimeDelta(differenceInSeconds(now, game.timeStarted))}
         </div>
         </div>
         <MCQCounter correctAnswers={correctAnswers} wrongAnswers={wrongAnswers}/>
