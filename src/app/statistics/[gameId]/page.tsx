@@ -71,7 +71,7 @@ const statisticsPage = async ({params: {gameId}}: Props) => {
           <AccuracyCard accuracy={accuracy}/>
           <TimeTakenCard timeEnded={new Date()} timeStarted={game.timeStarted}/>
         </div>
-        <QuestionList quesitons={game.questions}/>
+        <QuestionList questions={game.questions}/>
       </div>
     </>
   )
