@@ -174,7 +174,7 @@ const MCQ = ({game}: Props) => {
             </div>
           </CardTitle>
           <CardDescription className='flex-grow text-lg'>
-            {currentQuestion.question}
+            {currentQuestion?.question}
           </CardDescription>
         </CardHeader>
       </Card>
